@@ -1,0 +1,977 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Solar System & Complete World Atlas</title>
+    
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #030511;
+            background-image: radial-gradient(circle at center, #0a1026 0%, #020308 100%);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+        }
+
+        /* Top Right Side Control Panel */
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .instruction-badge {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .instruction-badge span { color: #60a5fa; font-weight: bold; }
+
+        .control-btn {
+            background: rgba(37, 99, 235, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .control-btn:hover {
+            background: rgba(37, 99, 235, 1);
+            transform: translateY(-2px);
+        }
+
+        .music-upload-btn {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .music-upload-btn:hover {
+            background: rgba(56, 189, 248, 0.15);
+        }
+
+        .sound-btn {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #38bdf8;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .sound-btn:hover {
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+
+        /* Solar System Stage */
+        .solar-system-stage {
+            width: 90vmin;
+            height: 90vmin;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sun {
+            position: absolute;
+            width: 8vmin; height: 8vmin;
+            background: radial-gradient(circle, #fff7ad 0%, #ffd700 50%, #ff8c00 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 3vmin #ffae00, 0 0 6vmin #ff4500;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+        .sun:hover { transform: scale(1.15); }
+
+        .orbit {
+            position: absolute;
+            border: 0.1vmin solid rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            pointer-events: none;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .murcury { width: 14vmin; height: 14vmin; animation: orbit 4s linear infinite; }
+        .murcuryshape { top: -0.7vmin; left: 50%; transform: translateX(-50%); width: 1.4vmin; height: 1.4vmin; background-color: #a5a5a5; border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+
+        .venus { width: 22vmin; height: 22vmin; animation: orbit 7s linear infinite; }
+        .venusshape { top: -1vmin; left: 50%; transform: translateX(-50%); width: 2vmin; height: 2vmin; background-color: #e3bb76; border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+
+        .earth { width: 32vmin; height: 32vmin; animation: orbit 11s linear infinite; }
+        .earthshape {
+            position: absolute; top: -1.3vmin; left: 50%; transform: translateX(-50%);
+            width: 2.6vmin; height: 2.6vmin;
+            background: linear-gradient(135deg, #1d4ed8 0%, #10b981 100%);
+            border-radius: 50%; cursor: pointer; pointer-events: auto;
+            box-shadow: 0 0 1vmin #3b82f6;
+            animation: pulse-earth 2s infinite ease-in-out;
+        }
+        @keyframes pulse-earth {
+            0%, 100% { box-shadow: 0 0 0.8vmin #3b82f6; }
+            50% { box-shadow: 0 0 1.8vmin #60a5fa; }
+        }
+
+        .mars { width: 41vmin; height: 41vmin; animation: orbit 15s linear infinite; }
+        .marsshape { top: -0.9vmin; left: 50%; transform: translateX(-50%); width: 1.8vmin; height: 1.8vmin; background-color: #ef4444; border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+
+        .jupiter { width: 52vmin; height: 52vmin; animation: orbit 20s linear infinite; }
+        .jupitershape { top: -1.9vmin; left: 50%; transform: translateX(-50%); width: 3.8vmin; height: 3.8vmin; background: linear-gradient(180deg, #c084fc 0%, #b45309 50%, #78350f 100%); border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+
+        .saturn { width: 63vmin; height: 63vmin; animation: orbit 25s linear infinite; }
+        .saturnshape { top: -1.6vmin; left: 50%; transform: translateX(-50%); width: 3.2vmin; height: 3.2vmin; background-color: #fde047; border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+        .saturnshape::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotateX(75deg);
+            width: 5.5vmin; height: 5.5vmin;
+            border: 0.4vmin solid rgba(253, 224, 71, 0.6); border-radius: 50%;
+        }
+
+        .uranus { width: 74vmin; height: 74vmin; animation: orbit 30s linear infinite; }
+        .uranusshape { top: -1.3vmin; left: 50%; transform: translateX(-50%); width: 2.6vmin; height: 2.6vmin; background-color: #22d3ee; border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+
+        .naptune { width: 85vmin; height: 85vmin; animation: orbit 35s linear infinite; }
+        .naptuneshape { top: -1.25vmin; left: 50%; transform: translateX(-50%); width: 2.5vmin; height: 2.5vmin; background-color: #3b82f6; border-radius: 50%; position: absolute; cursor: pointer; pointer-events: auto; }
+
+        @keyframes orbit { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        .paused .orbit { animation-play-state: paused !important; }
+
+        .murcuryshape:hover, .venusshape:hover, .earthshape:hover, 
+        .marsshape:hover, .jupitershape:hover, .saturnshape:hover, 
+        .uranusshape:hover, .naptuneshape:hover {
+            outline: 2px solid #fff; outline-offset: 3px;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(3, 5, 17, 0.9); backdrop-filter: blur(12px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .planet-card {
+            background: rgba(15, 23, 42, 0.96); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px; width: 92%; max-width: 750px; padding: 24px; position: relative;
+            display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+        }
+        #planet3dBox {
+            width: 260px; height: 260px; border-radius: 16px;
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            border: 1px solid rgba(255,255,255,0.1); cursor: grab;
+        }
+        .planet-info-box { flex: 1; min-width: 260px; }
+        .close-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .close-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
+
+        .earth-explorer-container {
+            width: 96vw; height: 94vh; max-width: 1500px;
+            background: rgba(11, 15, 25, 0.97); border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px; display: flex; overflow: hidden;
+            box-shadow: 0 0 80px rgba(0, 102, 255, 0.3); position: relative;
+        }
+
+        .globe-viewport { flex: 1.15; position: relative; background: radial-gradient(circle at center, #081229 0%, #02040a 100%); min-height: 300px; }
+        #globe3dCanvas { width: 100%; height: 100%; min-height: 300px; }
+
+        #hoverTooltip {
+            position: fixed;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #38bdf8;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            pointer-events: none;
+            display: none;
+            z-index: 999;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.5);
+            transform: translate(-50%, -140%);
+            white-space: nowrap;
+        }
+
+        .earth-sidebar {
+            width: 500px;
+            background: rgba(15, 23, 42, 0.98);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 18px 20px;
+            overflow-y: auto;
+            gap: 12px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 10px;
+        }
+        .header-title-group { display: flex; flex-direction: column; }
+        .header-title { font-size: 13px; color: #38bdf8; font-weight: 700; letter-spacing: 0.5px; }
+        .header-subtitle { font-size: 11px; color: #94a3b8; }
+
+        .search-box { position: relative; flex-shrink: 0; }
+        .search-box input {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 10px 14px 10px 38px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 13.5px;
+            outline: none;
+        }
+        .search-box input:focus { border-color: #3b82f6; }
+        .search-box i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #64748b; }
+
+        .continent-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #e2e8f0;
+            transition: 0.15s;
+        }
+        .tab-btn:hover { border-color: #60a5fa; }
+        .tab-btn.active { background: #2563eb; border-color: #60a5fa; color: #fff; font-weight: 600; }
+
+        .country-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            min-height: 95px;
+            max-height: 130px;
+            overflow-y: auto;
+            padding: 8px;
+            background: rgba(2, 6, 23, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+        .chip {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 5px 11px;
+            border-radius: 14px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #e2e8f0;
+            transition: 0.15s;
+            line-height: 1.2;
+        }
+        .chip:hover { border-color: #60a5fa; background: rgba(51, 65, 85, 0.9); }
+        .chip.active { background: #2563eb; border-color: #93c5fd; color: #fff; font-weight: 600; }
+
+        .details-panel { flex-shrink: 0; padding-top: 4px; }
+        .country-title { font-size: 24px; font-weight: 700; color: #60a5fa; margin-bottom: 2px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+        .stat-card { background: rgba(30, 41, 59, 0.55); padding: 9px 11px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-card .label { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
+        .stat-card .val { font-size: 13px; font-weight: 600; color: #f8fafc; margin-top: 2px; }
+
+        .fact-section {
+            background: rgba(30, 41, 59, 0.35); border-left: 3px solid #3b82f6;
+            padding: 10px 13px; border-radius: 0 8px 8px 0; margin-bottom: 9px;
+        }
+        .fact-section h4 { margin: 0 0 4px 0; font-size: 13px; color: #93c5fd; }
+        .fact-section p { margin: 0; font-size: 12.5px; color: #cbd5e1; line-height: 1.5; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        @media (max-width: 900px) {
+            .earth-explorer-container { flex-direction: column; }
+            .earth-sidebar { width: 100%; height: 55%; }
+            .globe-viewport { height: 45%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hidden Audio Player: Put "deep-space-exploration.mp3" in same folder OR pick via button -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="deep-space-exploration.mp3" type="audio/mpeg">
+    </audio>
+    <input type="file" id="audioFileInput" accept="audio/*" style="display:none" onchange="loadCustomAudio(event)">
+
+    <!-- Top-Right Control Panel -->
+    <div class="control-panel">
+        <div class="instruction-badge">
+            <i class="fa-solid fa-earth-americas" style="margin-right: 6px;"></i> Click <span>Earth</span> to explore World Countries
+        </div>
+        <!-- <button class="music-upload-btn" onclick="document.getElementById('audioFileInput').click()" title="Load Deep Space Exploration MP3 file">
+            <i class="fa-solid fa-music"></i> <span id="trackLabel">Select Track MP3</span>
+        </button> -->
+        <button class="sound-btn" id="soundToggleBtn" onclick="toggleMute()" title="Mute/Unmute Music">
+            <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+        </button>
+        <button class="control-btn" id="pauseBtn" onclick="toggleOrbit()">
+            <i class="fa-solid fa-pause" id="pauseIcon"></i> <span id="pauseText">Pause</span>
+        </button>
+    </div>
+
+    <!-- Orbiting Solar System -->
+    <div class="solar-system-stage" id="solarStage">
+        <div class="sun" onclick="openPlanetModal('Sun')"></div>
+        <div class="orbit murcury"><div class="murcuryshape" onclick="openPlanetModal('Mercury')"></div></div>
+        <div class="orbit venus"><div class="venusshape" onclick="openPlanetModal('Venus')"></div></div>
+        <div class="orbit earth"><div class="earthshape" onclick="openEarthExplorer()"></div></div>
+        <div class="orbit mars"><div class="marsshape" onclick="openPlanetModal('Mars')"></div></div>
+        <div class="orbit jupiter"><div class="jupitershape" onclick="openPlanetModal('Jupiter')"></div></div>
+        <div class="orbit saturn"><div class="saturnshape" onclick="openPlanetModal('Saturn')"></div></div>
+        <div class="orbit uranus"><div class="uranusshape" onclick="openPlanetModal('Uranus')"></div></div>
+        <div class="orbit naptune"><div class="naptuneshape" onclick="openPlanetModal('Neptune')"></div></div>
+    </div>
+
+    <!-- 3D Planet Info Modal -->
+    <div class="modal-overlay" id="planetModal">
+        <div class="planet-card">
+            <button class="close-btn" style="position:absolute; top:15px; right:15px;" onclick="closePlanetModal()">&times;</button>
+            <div id="planet3dBox"></div>
+            <div class="planet-info-box">
+                <h2 id="pName" style="margin:0 0 8px 0; color:#60a5fa;"></h2>
+                <p id="pDesc" style="color:#cbd5e1; font-size:13.5px; line-height:1.6;"></p>
+                <div class="stat-grid" style="margin-top:15px;">
+                    <div class="stat-card"><div class="label">Mass</div><div class="val" id="pMass"></div></div>
+                    <div class="stat-card"><div class="label">Diameter</div><div class="val" id="pDiam"></div></div>
+                    <div class="stat-card"><div class="label">Moons</div><div class="val" id="pMoons"></div></div>
+                    <div class="stat-card"><div class="label">Orbit Period</div><div class="val" id="pOrbit"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Earth & Complete World Countries Explorer -->
+    <div class="modal-overlay" id="earthExplorerModal">
+        <div class="earth-explorer-container">
+            <div id="hoverTooltip"></div>
+
+            <div class="globe-viewport">
+                <div id="globe3dCanvas"></div>
+                <div style="position: absolute; bottom: 15px; left: 15px; background: rgba(15,23,42,0.85); padding: 8px 14px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(255,255,255,0.12);">
+                    <i class="fa-solid fa-hand-pointer" style="margin-right: 6px; color:#38bdf8;"></i> Hover or Click on any Country Pin on the 3D Globe
+                </div>
+            </div>
+
+            <div class="earth-sidebar">
+                <div class="sidebar-header">
+                    <div class="header-title-group">
+                        <span class="header-title"><i class="fa-solid fa-globe"></i> WORLD ATLAS EXPLORER</span>
+                        <span class="header-subtitle" id="totalCountBadge">Loading countries...</span>
+                    </div>
+                    <button class="close-btn" onclick="closeEarthExplorer()" title="Close">&times;</button>
+                </div>
+
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="countrySearch" placeholder="Search any country (e.g. India, Japan, Brazil)..." oninput="renderCountryChips()">
+                </div>
+
+                <div class="continent-tabs">
+                    <button class="tab-btn active" onclick="filterByContinent('All', this)">All World</button>
+                    <button class="tab-btn" onclick="filterByContinent('Asia', this)">Asia</button>
+                    <button class="tab-btn" onclick="filterByContinent('Europe', this)">Europe</button>
+                    <button class="tab-btn" onclick="filterByContinent('Americas', this)">Americas</button>
+                    <button class="tab-btn" onclick="filterByContinent('Africa', this)">Africa</button>
+                    <button class="tab-btn" onclick="filterByContinent('Oceania', this)">Oceania</button>
+                </div>
+
+                <div class="country-chips" id="countryChips"></div>
+                <div class="details-panel" id="countryDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+           AUDIO CONTROLLER FOR "DEEP SPACE EXPLORATION" MP3
+           ========================================================= */
+        const bgMusic = document.getElementById('bgMusic');
+        bgMusic.volume = 0.55;
+
+        let isOrbitPaused = false;
+        let isUserMuted = false;
+
+        function tryPlayMusic() {
+            if (!isOrbitPaused && !isUserMuted) {
+                bgMusic.play().catch(() => {
+                    // Browser waits for user interaction or local mp3 file
+                });
+            }
+        }
+
+        function loadCustomAudio(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const fileURL = URL.createObjectURL(file);
+            bgMusic.src = fileURL;
+            document.getElementById('trackLabel').innerText = file.name.slice(0, 18) + (file.name.length > 18 ? '...' : '');
+            if (!isOrbitPaused && !isUserMuted) {
+                bgMusic.play();
+            }
+        }
+
+        // Auto-start music on first click anywhere on screen
+        document.addEventListener('pointerdown', () => {
+            if (bgMusic.paused && !isOrbitPaused && !isUserMuted) {
+                tryPlayMusic();
+            }
+        });
+
+        function toggleMute() {
+            isUserMuted = !isUserMuted;
+            bgMusic.muted = isUserMuted;
+            const icon = document.getElementById('soundIcon');
+            icon.className = isUserMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+            if (!isUserMuted && !isOrbitPaused) {
+                tryPlayMusic();
+            }
+        }
+
+        /* Orbit Pause/Resume (Syncs with Music Pause/Play) */
+        function toggleOrbit() {
+            const stage = document.getElementById('solarStage');
+            const icon = document.getElementById('pauseIcon');
+            const text = document.getElementById('pauseText');
+            isOrbitPaused = !isOrbitPaused;
+            
+            if (isOrbitPaused) {
+                stage.classList.add('paused');
+                icon.className = 'fa-solid fa-play';
+                text.innerText = 'Resume';
+                bgMusic.pause();
+            } else {
+                stage.classList.remove('paused');
+                icon.className = 'fa-solid fa-pause';
+                text.innerText = 'Pause';
+                tryPlayMusic();
+            }
+        }
+
+        /* Planets Data & 3D Preview */
+        const planetData = {
+            Sun: { name: "Sun (सूर्य)", color: 0xffaa00, mass: "1.989 × 10^30 kg", diam: "1,392,700 km", moons: "8 Planets", orbit: "230M Yrs", desc: "The Sun is a G-type main-sequence star at the center of our Solar System. It accounts for 99.86% of the total mass of the entire Solar System." },
+            Mercury: { name: "Mercury (बुध)", color: 0x9ca3af, mass: "3.301 × 10^23 kg", diam: "4,879 km", moons: "0", orbit: "88 Days", desc: "Mercury is the smallest and innermost planet in the Solar System. Its surface is heavily cratered and resembles Earth's Moon." },
+            Venus: { name: "Venus (शुक्र)", color: 0xfde047, mass: "4.867 × 10^24 kg", diam: "12,104 km", moons: "0", orbit: "225 Days", desc: "Venus is the hottest planet in our Solar System with surface temperatures reaching 475°C due to a dense carbon dioxide greenhouse atmosphere." },
+            Mars: { name: "Mars (मंगल)", color: 0xef4444, mass: "6.417 × 10^23 kg", diam: "6,779 km", moons: "2 (Phobos, Deimos)", orbit: "687 Days", desc: "Known as the Red Planet due to iron oxide on its surface. Home to Olympus Mons, the tallest volcano in the Solar System." },
+            Jupiter: { name: "Jupiter (बृहस्पति)", color: 0xd97706, mass: "1.898 × 10^27 kg", diam: "139,820 km", moons: "95", orbit: "12 Years", desc: "The largest planet in the Solar System—more than twice as massive as all other planets combined. Famous for its Great Red Spot storm." },
+            Saturn: { name: "Saturn (शनि)", color: 0xfacc15, mass: "5.683 × 10^26 kg", diam: "116,460 km", moons: "146", orbit: "29.5 Years", desc: "Adorned with a dazzling system of icy rings spanning up to 282,000 km across. Saturn has the lowest density of any planet." },
+            Uranus: { name: "Uranus (अरुण)", color: 0x22d3ee, mass: "8.681 × 10^25 kg", diam: "50,724 km", moons: "28", orbit: "84 Years", desc: "An ice giant with a blue-green hue caused by methane gas. Uranus rotates at a nearly 98-degree tilt, rolling around the Sun on its side." },
+            Neptune: { name: "Neptune (वरुण)", color: 0x3b82f6, mass: "1.024 × 10^26 kg", diam: "49,244 km", moons: "16", orbit: "165 Years", desc: "The farthest known planet from the Sun, swept by supersonic winds reaching over 2,100 km/h." }
+        };
+
+        let pScene, pCamera, pRenderer, pMesh, pAnimId;
+        function openPlanetModal(name) {
+            const data = planetData[name];
+            if(!data) return;
+            document.getElementById('pName').innerText = data.name;
+            document.getElementById('pDesc').innerText = data.desc;
+            document.getElementById('pMass').innerText = data.mass;
+            document.getElementById('pDiam').innerText = data.diam;
+            document.getElementById('pMoons').innerText = data.moons;
+            document.getElementById('pOrbit').innerText = data.orbit;
+            document.getElementById('planetModal').classList.add('active');
+
+            const box = document.getElementById('planet3dBox');
+            box.innerHTML = '';
+            pScene = new THREE.Scene();
+            pCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+            pCamera.position.z = 3.2;
+            pRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            pRenderer.setSize(260, 260);
+            box.appendChild(pRenderer.domElement);
+
+            pScene.add(new THREE.AmbientLight(0xffffff, 0.7));
+            const dl = new THREE.DirectionalLight(0xffffff, 0.9);
+            dl.position.set(5, 3, 5);
+            pScene.add(dl);
+
+            const geo = new THREE.SphereGeometry(1, 48, 48);
+            const mat = new THREE.MeshStandardMaterial({ color: data.color, roughness: 0.5 });
+            pMesh = new THREE.Mesh(geo, mat);
+            pScene.add(pMesh);
+
+            if (name === 'Saturn') {
+                const ringGeo = new THREE.RingGeometry(1.3, 2.1, 64);
+                const ringMat = new THREE.MeshBasicMaterial({ color: 0xfde047, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.rotation.x = Math.PI / 2.4;
+                pMesh.add(ring);
+            }
+
+            function animPlanet() {
+                pAnimId = requestAnimationFrame(animPlanet);
+                pMesh.rotation.y += 0.01;
+                pRenderer.render(pScene, pCamera);
+            }
+            animPlanet();
+        }
+        function closePlanetModal() {
+            document.getElementById('planetModal').classList.remove('active');
+            if(pAnimId) cancelAnimationFrame(pAnimId);
+        }
+
+        /* Curated Deep Knowledge */
+        const detailedKnowledge = {
+            "India": {
+                geo: "Extends from the towering snow-clad Himalayan mountain ranges down to the tropical coastline of the Indian Ocean, featuring major river basins like the Ganges and Brahmaputra.",
+                history: "Home to the ancient Indus Valley Civilization, birthplace of Hinduism, Buddhism, Jainism, and Sikhism, and rich Mauryan, Gupta, and Mughal heritage.",
+                culture: "A vibrant mosaic of 22 official languages, classical dances, festivals like Diwali and Holi, and world wonders like the Taj Mahal.",
+                fun: "Yoga originated in India over 5,000 years ago, and India was the first nation to reach Mars orbit on its maiden attempt!"
+            },
+            "United States": {
+                geo: "Spans across North America from Atlantic to Pacific, featuring the Grand Canyon, Rocky Mountains, Great Lakes, and Alaskan glaciers.",
+                history: "Founded in 1776; grew through industrialization and innovation into a global superpower.",
+                culture: "Global cultural influence via Hollywood, jazz, hip-hop, sports, and diverse immigrant heritage.",
+                fun: "The United States has no official national language at the federal level!"
+            },
+            "Japan": {
+                geo: "An East Asian archipelago of over 6,800 volcanic islands, highlighted by Mount Fuji.",
+                history: "Shaped by centuries of Samurai and Shogunate rule followed by rapid modern industrial transformation.",
+                culture: "Unique harmony of ancient temples, tea ceremonies, anime, manga, and world-famous cuisine.",
+                fun: "Japan has over 5 million vending machines—roughly 1 for every 25 people!"
+            },
+            "China": {
+                geo: "Vast terrain encompassing the Tibetan Plateau, Gobi Desert, and fertile Yangtze and Yellow River valleys.",
+                history: "Over 5,000 years of dynastic history credited with inventing paper, printing, gunpowder, and the compass.",
+                culture: "Deeply rooted in Confucian philosophy, calligraphy, martial arts, and the Great Wall.",
+                fun: "Every giant panda anywhere on Earth belongs to China!"
+            }
+        };
+
+        /* Expanded Built-in World Atlas */
+        const fallbackCountries = [
+            { id: "IND", name: "India", officialName: "Republic of India", flag: "🇮🇳", cont: "Asia", subregion: "Southern Asia", lat: 20.59, lng: 78.96, capital: "New Delhi", pop: "1,441,719,852", area: "3,287,590 km²", curr: "Indian Rupee (₹)", lang: "Hindi, English", borders: "PAK, CHN, NPL, BTN, MMR, BGD", timezone: "UTC+05:30" },
+            { id: "CHN", name: "China", officialName: "People's Republic of China", flag: "🇨🇳", cont: "Asia", subregion: "Eastern Asia", lat: 35.86, lng: 104.19, capital: "Beijing", pop: "1,411,750,000", area: "9,596,961 km²", curr: "Chinese Yuan (¥)", lang: "Mandarin", borders: "IND, RUS, MNG, KAZ, NPL, PAK", timezone: "UTC+08:00" },
+            { id: "JPN", name: "Japan", officialName: "Japan", flag: "🇯🇵", cont: "Asia", subregion: "Eastern Asia", lat: 36.20, lng: 138.25, capital: "Tokyo", pop: "124,352,000", area: "377,975 km²", curr: "Japanese Yen (¥)", lang: "Japanese", borders: "Island Nation", timezone: "UTC+09:00" },
+            { id: "KOR", name: "South Korea", officialName: "Republic of Korea", flag: "🇰🇷", cont: "Asia", subregion: "Eastern Asia", lat: 35.90, lng: 127.76, capital: "Seoul", pop: "51,712,619", area: "100,210 km²", curr: "South Korean Won (₩)", lang: "Korean", borders: "PRK", timezone: "UTC+09:00" },
+            { id: "IDN", name: "Indonesia", officialName: "Republic of Indonesia", flag: "🇮🇩", cont: "Asia", subregion: "South-Eastern Asia", lat: -0.78, lng: 113.92, capital: "Jakarta", pop: "279,798,049", area: "1,904,569 km²", curr: "Indonesian Rupiah (Rp)", lang: "Indonesian", borders: "MYS, PNG, TLS", timezone: "UTC+07:00" },
+            { id: "SAU", name: "Saudi Arabia", officialName: "Kingdom of Saudi Arabia", flag: "🇸🇦", cont: "Asia", subregion: "Western Asia", lat: 23.88, lng: 45.07, capital: "Riyadh", pop: "36,947,025", area: "2,149,690 km²", curr: "Saudi Riyal (﷼)", lang: "Arabic", borders: "JOR, IRQ, KWT, QAT, ARE, OMN, YEM", timezone: "UTC+03:00" },
+            { id: "ARE", name: "United Arab Emirates", officialName: "United Arab Emirates", flag: "🇦🇪", cont: "Asia", subregion: "Western Asia", lat: 23.42, lng: 53.84, capital: "Abu Dhabi", pop: "9,516,871", area: "83,600 km²", curr: "UAE Dirham (د.إ)", lang: "Arabic", borders: "OMN, SAU", timezone: "UTC+04:00" },
+            { id: "THA", name: "Thailand", officialName: "Kingdom of Thailand", flag: "🇹🇭", cont: "Asia", subregion: "South-Eastern Asia", lat: 15.87, lng: 100.99, capital: "Bangkok", pop: "71,801,279", area: "513,120 km²", curr: "Thai Baht (฿)", lang: "Thai", borders: "MMR, LAO, KHM, MYS", timezone: "UTC+07:00" },
+            { id: "VNM", name: "Vietnam", officialName: "Socialist Republic of Vietnam", flag: "🇻🇳", cont: "Asia", subregion: "South-Eastern Asia", lat: 14.05, lng: 108.27, capital: "Hanoi", pop: "98,858,950", area: "331,212 km²", curr: "Vietnamese Dong (₫)", lang: "Vietnamese", borders: "CHN, LAO, KHM", timezone: "UTC+07:00" },
+            { id: "PAK", name: "Pakistan", officialName: "Islamic Republic of Pakistan", flag: "🇵🇰", cont: "Asia", subregion: "Southern Asia", lat: 30.37, lng: 69.34, capital: "Islamabad", pop: "241,499,431", area: "881,912 km²", curr: "Pakistani Rupee (₨)", lang: "Urdu, English", borders: "IND, AFG, IRN, CHN", timezone: "UTC+05:00" },
+            { id: "BGD", name: "Bangladesh", officialName: "People's Republic of Bangladesh", flag: "🇧🇩", cont: "Asia", subregion: "Southern Asia", lat: 23.68, lng: 90.35, capital: "Dhaka", pop: "172,954,319", area: "147,570 km²", curr: "Bangladeshi Taka (৳)", lang: "Bengali", borders: "IND, MMR", timezone: "UTC+06:00" },
+            { id: "NPL", name: "Nepal", officialName: "Federal Democratic Republic of Nepal", flag: "🇳🇵", cont: "Asia", subregion: "Southern Asia", lat: 28.39, lng: 84.12, capital: "Kathmandu", pop: "30,896,590", area: "147,181 km²", curr: "Nepalese Rupee (₨)", lang: "Nepali", borders: "IND, CHN", timezone: "UTC+05:45" },
+            { id: "TUR", name: "Turkey", officialName: "Republic of Türkiye", flag: "🇹🇷", cont: "Asia", subregion: "Western Asia", lat: 38.96, lng: 35.24, capital: "Ankara", pop: "85,326,000", area: "783,562 km²", curr: "Turkish Lira (₺)", lang: "Turkish", borders: "GRC, BGR, GEO, ARM, IRN, IRQ, SYR", timezone: "UTC+03:00" },
+            { id: "DEU", name: "Germany", officialName: "Federal Republic of Germany", flag: "🇩🇪", cont: "Europe", subregion: "Western Europe", lat: 51.16, lng: 10.45, capital: "Berlin", pop: "84,482,267", area: "357,114 km²", curr: "Euro (€)", lang: "German", borders: "FRA, POL, AUT, CHE, NLD, BEL", timezone: "UTC+01:00" },
+            { id: "GBR", name: "United Kingdom", officialName: "United Kingdom of Great Britain", flag: "🇬🇧", cont: "Europe", subregion: "Northern Europe", lat: 55.37, lng: -3.43, capital: "London", pop: "68,350,000", area: "242,495 km²", curr: "British Pound (£)", lang: "English", borders: "IRL", timezone: "UTC+00:00" },
+            { id: "FRA", name: "France", officialName: "French Republic", flag: "🇫🇷", cont: "Europe", subregion: "Western Europe", lat: 46.22, lng: 2.21, capital: "Paris", pop: "68,170,228", area: "551,695 km²", curr: "Euro (€)", lang: "French", borders: "DEU, ESP, ITA, CHE, BEL", timezone: "UTC+01:00" },
+            { id: "ITA", name: "Italy", officialName: "Italian Republic", flag: "🇮🇹", cont: "Europe", subregion: "Southern Europe", lat: 41.87, lng: 12.56, capital: "Rome", pop: "58,761,146", area: "301,336 km²", curr: "Euro (€)", lang: "Italian", borders: "FRA, CHE, AUT, SVN", timezone: "UTC+01:00" },
+            { id: "ESP", name: "Spain", officialName: "Kingdom of Spain", flag: "🇪🇸", cont: "Europe", subregion: "Southern Europe", lat: 40.46, lng: -3.74, capital: "Madrid", pop: "48,373,336", area: "505,992 km²", curr: "Euro (€)", lang: "Spanish", borders: "FRA, PRT, AND", timezone: "UTC+01:00" },
+            { id: "RUS", name: "Russia", officialName: "Russian Federation", flag: "🇷🇺", cont: "Europe", subregion: "Eastern Europe", lat: 61.52, lng: 105.31, capital: "Moscow", pop: "144,444,359", area: "17,098,242 km²", curr: "Russian Ruble (₽)", lang: "Russian", borders: "CHN, KAZ, UKR, FIN, NOR, POL", timezone: "UTC+03:00" },
+            { id: "CHE", name: "Switzerland", officialName: "Swiss Confederation", flag: "🇨🇭", cont: "Europe", subregion: "Western Europe", lat: 46.81, lng: 8.22, capital: "Bern", pop: "8,849,852", area: "41,284 km²", curr: "Swiss Franc (CHF)", lang: "German, French, Italian", borders: "DEU, FRA, ITA, AUT", timezone: "UTC+01:00" },
+            { id: "NLD", name: "Netherlands", officialName: "Kingdom of the Netherlands", flag: "🇳🇱", cont: "Europe", subregion: "Western Europe", lat: 52.13, lng: 5.29, capital: "Amsterdam", pop: "17,879,488", area: "41,850 km²", curr: "Euro (€)", lang: "Dutch", borders: "BEL, DEU", timezone: "UTC+01:00" },
+            { id: "SWE", name: "Sweden", officialName: "Kingdom of Sweden", flag: "🇸🇪", cont: "Europe", subregion: "Northern Europe", lat: 60.12, lng: 18.64, capital: "Stockholm", pop: "10,536,632", area: "450,295 km²", curr: "Swedish Krona (kr)", lang: "Swedish", borders: "NOR, FIN", timezone: "UTC+01:00" },
+            { id: "NOR", name: "Norway", officialName: "Kingdom of Norway", flag: "🇳🇴", cont: "Europe", subregion: "Northern Europe", lat: 60.47, lng: 8.46, capital: "Oslo", pop: "5,519,594", area: "323,802 km²", curr: "Norwegian Krone (kr)", lang: "Norwegian", borders: "SWE, FIN, RUS", timezone: "UTC+01:00" },
+            { id: "POL", name: "Poland", officialName: "Republic of Poland", flag: "🇵🇱", cont: "Europe", subregion: "Central Europe", lat: 51.91, lng: 19.14, capital: "Warsaw", pop: "36,685,849", area: "312,679 km²", curr: "Polish Złoty (zł)", lang: "Polish", borders: "DEU, CZE, SVK, UKR, BLR", timezone: "UTC+01:00" },
+            { id: "GRC", name: "Greece", officialName: "Hellenic Republic", flag: "🇬🇷", cont: "Europe", subregion: "Southern Europe", lat: 39.07, lng: 21.82, capital: "Athens", pop: "10,361,295", area: "131,990 km²", curr: "Euro (€)", lang: "Greek", borders: "ALB, MKD, BGR, TUR", timezone: "UTC+02:00" },
+            { id: "USA", name: "United States", officialName: "United States of America", flag: "🇺🇸", cont: "Americas", subregion: "North America", lat: 37.09, lng: -95.71, capital: "Washington, D.C.", pop: "334,914,895", area: "9,833,517 km²", curr: "US Dollar ($)", lang: "English", borders: "CAN, MEX", timezone: "UTC-05:00" },
+            { id: "CAN", name: "Canada", officialName: "Canada", flag: "🇨🇦", cont: "Americas", subregion: "North America", lat: 56.13, lng: -106.34, capital: "Ottawa", pop: "40,097,761", area: "9,984,670 km²", curr: "Canadian Dollar ($)", lang: "English, French", borders: "USA", timezone: "UTC-05:00" },
+            { id: "MEX", name: "Mexico", officialName: "United Mexican States", flag: "🇲🇽", cont: "Americas", subregion: "North America", lat: 23.63, lng: -102.55, capital: "Mexico City", pop: "128,455,567", area: "1,964,375 km²", curr: "Mexican Peso ($)", lang: "Spanish", borders: "USA, GTM, BLZ", timezone: "UTC-06:00" },
+            { id: "BRA", name: "Brazil", officialName: "Federative Republic of Brazil", flag: "🇧🇷", cont: "Americas", subregion: "South America", lat: -14.23, lng: -51.92, capital: "Brasília", pop: "216,422,446", area: "8,515,767 km²", curr: "Brazilian Real (R$)", lang: "Portuguese", borders: "ARG, PER, COL, VEN, BOL", timezone: "UTC-03:00" },
+            { id: "ARG", name: "Argentina", officialName: "Argentine Republic", flag: "🇦🇷", cont: "Americas", subregion: "South America", lat: -38.41, lng: -63.61, capital: "Buenos Aires", pop: "46,654,581", area: "2,780,400 km²", curr: "Argentine Peso ($)", lang: "Spanish", borders: "CHL, BOL, PRY, BRA, URY", timezone: "UTC-03:00" },
+            { id: "COL", name: "Colombia", officialName: "Republic of Colombia", flag: "🇨🇴", cont: "Americas", subregion: "South America", lat: 4.57, lng: -74.29, capital: "Bogotá", pop: "52,085,168", area: "1,141,748 km²", curr: "Colombian Peso ($)", lang: "Spanish", borders: "PAN, VEN, BRA, PER, ECU", timezone: "UTC-05:00" },
+            { id: "PER", name: "Peru", officialName: "Republic of Peru", flag: "🇵🇪", cont: "Americas", subregion: "South America", lat: -9.18, lng: -75.01, capital: "Lima", pop: "34,352,719", area: "1,285,216 km²", curr: "Peruvian Sol (S/.)", lang: "Spanish, Quechua", borders: "ECU, COL, BRA, BOL, CHL", timezone: "UTC-05:00" },
+            { id: "CHL", name: "Chile", officialName: "Republic of Chile", flag: "🇨🇱", cont: "Americas", subregion: "South America", lat: -35.67, lng: -71.54, capital: "Santiago", pop: "19,629,590", area: "756,102 km²", curr: "Chilean Peso ($)", lang: "Spanish", borders: "PER, BOL, ARG", timezone: "UTC-04:00" },
+            { id: "EGY", name: "Egypt", officialName: "Arab Republic of Egypt", flag: "🇪🇬", cont: "Africa", subregion: "Northern Africa", lat: 26.82, lng: 30.80, capital: "Cairo", pop: "112,716,598", area: "1,002,450 km²", curr: "Egyptian Pound (E£)", lang: "Arabic", borders: "LBY, SDN, ISR", timezone: "UTC+02:00" },
+            { id: "ZAF", name: "South Africa", officialName: "Republic of South Africa", flag: "🇿🇦", cont: "Africa", subregion: "Southern Africa", lat: -30.55, lng: 22.93, capital: "Pretoria", pop: "60,414,495", area: "1,221,037 km²", curr: "South African Rand (R)", lang: "Zulu, Xhosa, English", borders: "NAM, BWA, ZWE, MOZ", timezone: "UTC+02:00" },
+            { id: "NGA", name: "Nigeria", officialName: "Federal Republic of Nigeria", flag: "🇳🇬", cont: "Africa", subregion: "Western Africa", lat: 9.08, lng: 8.67, capital: "Abuja", pop: "223,804,632", area: "923,768 km²", curr: "Nigerian Naira (₦)", lang: "English", borders: "BEN, NER, TCD, CMR", timezone: "UTC+01:00" },
+            { id: "KEN", name: "Kenya", officialName: "Republic of Kenya", flag: "🇰🇪", cont: "Africa", subregion: "Eastern Africa", lat: -0.02, lng: 37.90, capital: "Nairobi", pop: "55,100,586", area: "580,367 km²", curr: "Kenyan Shilling (KSh)", lang: "Swahili, English", borders: "ETH, SOM, TZA, UGA, SSD", timezone: "UTC+03:00" },
+            { id: "MAR", name: "Morocco", officialName: "Kingdom of Morocco", flag: "🇲🇦", cont: "Africa", subregion: "Northern Africa", lat: 31.79, lng: -7.09, capital: "Rabat", pop: "37,840,044", area: "446,550 km²", curr: "Moroccan Dirham (DH)", lang: "Arabic, Berber", borders: "DZA, ESP", timezone: "UTC+01:00" },
+            { id: "ETH", name: "Ethiopia", officialName: "Federal Democratic Republic of Ethiopia", flag: "🇪🇹", cont: "Africa", subregion: "Eastern Africa", lat: 9.14, lng: 40.48, capital: "Addis Ababa", pop: "126,527,060", area: "1,104,300 km²", curr: "Ethiopian Birr (Br)", lang: "Amharic", borders: "ERI, DJI, SOM, KEN, SSD, SDN", timezone: "UTC+03:00" },
+            { id: "AUS", name: "Australia", officialName: "Commonwealth of Australia", flag: "🇦🇺", cont: "Oceania", subregion: "Australia and New Zealand", lat: -25.27, lng: 133.77, capital: "Canberra", pop: "26,638,544", area: "7,692,024 km²", curr: "Australian Dollar ($)", lang: "English", borders: "Island Continent", timezone: "UTC+10:00" },
+            { id: "NZL", name: "New Zealand", officialName: "New Zealand", flag: "🇳🇿", cont: "Oceania", subregion: "Australia and New Zealand", lat: -40.90, lng: 174.88, capital: "Wellington", pop: "5,223,100", area: "268,021 km²", curr: "New Zealand Dollar ($)", lang: "English, Māori", borders: "Island Nation", timezone: "UTC+12:00" },
+            { id: "FJI", name: "Fiji", officialName: "Republic of Fiji", flag: "🇫🇯", cont: "Oceania", subregion: "Melanesia", lat: -17.71, lng: 178.06, capital: "Suva", pop: "936,375", area: "18,272 km²", curr: "Fijian Dollar ($)", lang: "English, Fijian, Hindi", borders: "Island Nation", timezone: "UTC+12:00" }
+        ].sort((a, b) => a.name.localeCompare(b.name));
+
+        let allCountriesList = [...fallbackCountries];
+        let activeContinent = 'All';
+
+        async function loadAllWorldCountries() {
+            try {
+                const res = await fetch('https://restcountries.com/v3.1/all?fields=name,cca3,flag,region,subregion,latlng,capital,population,area,currencies,languages,borders,timezones');
+                if (!res.ok) throw new Error("Network error");
+                const data = await res.json();
+                
+                allCountriesList = data
+                    .filter(c => c.latlng && c.latlng.length === 2)
+                    .map(c => {
+                        const currObj = c.currencies ? Object.values(c.currencies)[0] : null;
+                        const currStr = currObj ? `${currObj.name} (${currObj.symbol || ''})` : 'N/A';
+                        const langStr = c.languages ? Object.values(c.languages).slice(0, 3).join(', ') : 'N/A';
+                        
+                        return {
+                            id: c.cca3,
+                            name: c.name.common,
+                            officialName: c.name.official,
+                            flag: c.flag || "🏳️",
+                            cont: c.region || "Other",
+                            subregion: c.subregion || c.region || "Global",
+                            lat: c.latlng[0],
+                            lng: c.latlng[1],
+                            capital: (c.capital && c.capital[0]) ? c.capital[0] : "N/A",
+                            pop: c.population ? c.population.toLocaleString() : "N/A",
+                            area: c.area ? `${c.area.toLocaleString()} km²` : "N/A",
+                            curr: currStr,
+                            lang: langStr,
+                            borders: (c.borders && c.borders.length > 0) ? c.borders.join(', ') : "Island / No Land Borders",
+                            timezone: (c.timezones && c.timezones[0]) ? c.timezones[0] : "UTC"
+                        };
+                    })
+                    .sort((a, b) => a.name.localeCompare(b.name));
+
+                document.getElementById('totalCountBadge').innerText = `${allCountriesList.length} Countries Loaded`;
+            } catch (err) {
+                allCountriesList = [...fallbackCountries];
+                document.getElementById('totalCountBadge').innerText = `${allCountriesList.length} Major Countries Loaded`;
+            }
+        }
+
+        loadAllWorldCountries();
+
+        /* 3D Earth Globe Engine */
+        let scene, camera, renderer, globe, controls, isGlobeInitialized = false;
+        let pinsArray = [];
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        async function openEarthExplorer() {
+            document.getElementById('earthExplorerModal').classList.add('active');
+            document.getElementById('totalCountBadge').innerText = `${allCountriesList.length} Countries Available`;
+            
+            setTimeout(() => {
+                if (!isGlobeInitialized) {
+                    init3DGlobe();
+                    isGlobeInitialized = true;
+                } else if(renderer) {
+                    const container = document.getElementById('globe3dCanvas');
+                    camera.aspect = container.clientWidth / container.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                }
+                renderCountryChips();
+                const india = allCountriesList.find(c => c.id === 'IND') || allCountriesList[0];
+                if(india) selectCountry(india.id);
+            }, 100);
+        }
+
+        function closeEarthExplorer() { 
+            document.getElementById('earthExplorerModal').classList.remove('active'); 
+            document.getElementById('hoverTooltip').style.display = 'none';
+        }
+
+        function init3DGlobe() {
+            const container = document.getElementById('globe3dCanvas');
+            const w = container.clientWidth || 600;
+            const h = container.clientHeight || 500;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            camera.position.z = 165;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            if (THREE.OrbitControls) {
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.minDistance = 85;
+                controls.maxDistance = 300;
+            }
+
+            scene.add(new THREE.AmbientLight(0xffffff, 1.1));
+            const light = new THREE.DirectionalLight(0xffffff, 0.7);
+            light.position.set(5, 3, 5);
+            scene.add(light);
+
+            const loader = new THREE.TextureLoader();
+            loader.setCrossOrigin('anonymous');
+            
+            const earthGeo = new THREE.SphereGeometry(60, 64, 64);
+            const earthMat = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                roughness: 0.65,
+                metalness: 0.1
+            });
+
+            loader.load(
+                'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+                (tex) => {
+                    earthMat.map = tex;
+                    earthMat.needsUpdate = true;
+                },
+                undefined,
+                () => {
+                    const mapCanvas = document.createElement('canvas');
+                    mapCanvas.width = 1024; mapCanvas.height = 512;
+                    const ctx = mapCanvas.getContext('2d');
+                    ctx.fillStyle = '#0b2545'; ctx.fillRect(0,0,1024,512);
+                    ctx.fillStyle = '#134e4a';
+                    ctx.beginPath(); ctx.ellipse(650, 200, 180, 100, 0, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.ellipse(300, 240, 120, 180, 0.4, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.ellipse(850, 360, 60, 45, 0, 0, Math.PI*2); ctx.fill();
+                    earthMat.map = new THREE.CanvasTexture(mapCanvas);
+                    earthMat.needsUpdate = true;
+                }
+            );
+
+            globe = new THREE.Mesh(earthGeo, earthMat);
+            scene.add(globe);
+
+            const atmoGeo = new THREE.SphereGeometry(61.5, 64, 64);
+            const atmoMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.12,
+                side: THREE.BackSide
+            });
+            globe.add(new THREE.Mesh(atmoGeo, atmoMat));
+
+            const pinGeo = new THREE.SphereGeometry(1.1, 12, 12);
+            allCountriesList.forEach(c => {
+                const phi = (90 - c.lat) * (Math.PI / 180);
+                const theta = (c.lng + 180) * (Math.PI / 180);
+                const x = -(60.4 * Math.sin(phi) * Math.cos(theta));
+                const z = (60.4 * Math.sin(phi) * Math.sin(theta));
+                const y = (60.4 * Math.cos(phi));
+
+                const pinMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+                const pin = new THREE.Mesh(pinGeo, pinMat);
+                pin.position.set(x, y, z);
+                pin.userData = { country: c };
+                globe.add(pin);
+                pinsArray.push(pin);
+            });
+
+            const tooltip = document.getElementById('hoverTooltip');
+
+            container.addEventListener('mousemove', (event) => {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(pinsArray);
+
+                if (intersects.length > 0) {
+                    const country = intersects[0].object.userData.country;
+                    tooltip.innerHTML = `${country.flag} ${country.name} <span style="color:#94a3b8; font-weight:400;">(${country.capital})</span>`;
+                    tooltip.style.left = event.clientX + 'px';
+                    tooltip.style.top = event.clientY + 'px';
+                    tooltip.style.display = 'block';
+                    container.style.cursor = 'pointer';
+                } else {
+                    tooltip.style.display = 'none';
+                    container.style.cursor = 'grab';
+                }
+            });
+
+            container.addEventListener('click', () => {
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(pinsArray);
+                if (intersects.length > 0) {
+                    const country = intersects[0].object.userData.country;
+                    selectCountry(country.id);
+                }
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (controls) controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                if(!container || !renderer) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        function focusCoordinates(lat, lng) {
+            if(!globe) return;
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lng + 180) * (Math.PI / 180);
+            globe.rotation.y = -theta + Math.PI / 2;
+            globe.rotation.x = phi - Math.PI / 2;
+        }
+
+        function filterByContinent(cont, btn) {
+            activeContinent = cont;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            renderCountryChips();
+        }
+
+        function renderCountryChips() {
+            const query = document.getElementById('countrySearch').value.toLowerCase().trim();
+            const container = document.getElementById('countryChips');
+            
+            const filtered = allCountriesList.filter(c => {
+                const matchesCont = activeContinent === 'All' || c.cont === activeContinent;
+                const matchesSearch = c.name.toLowerCase().includes(query) || 
+                                      (c.capital && c.capital.toLowerCase().includes(query));
+                return matchesCont && matchesSearch;
+            });
+
+            container.innerHTML = filtered.map(c => `
+                <div class="chip" id="chip-${c.id}" onclick="selectCountry('${c.id}')">
+                    ${c.flag} ${c.name}
+                </div>
+            `).join('');
+
+            if(filtered.length > 0 && query.length > 0) {
+                selectCountry(filtered[0].id);
+            }
+        }
+
+        function selectCountry(id) {
+            const country = allCountriesList.find(c => c.id === id);
+            if (!country) return;
+
+            document.querySelectorAll('.chip').forEach(el => el.classList.remove('active'));
+            const activeChip = document.getElementById(`chip-${id}`);
+            if (activeChip) {
+                activeChip.classList.add('active');
+                activeChip.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            pinsArray.forEach(p => {
+                if (p.userData.country.id === id) {
+                    p.material.color.setHex(0xef4444);
+                    p.scale.set(1.8, 1.8, 1.8);
+                } else {
+                    p.material.color.setHex(0xfacc15);
+                    p.scale.set(1, 1, 1);
+                }
+            });
+
+            const custom = detailedKnowledge[country.name];
+            const geoText = custom ? custom.geo : `${country.name} is located in the ${country.subregion || country.cont} region at coordinates ${country.lat.toFixed(2)}°, ${country.lng.toFixed(2)}°, spanning a total geographical area of ${country.area}.`;
+            const historyText = custom ? custom.history : `${country.officialName || country.name} has a distinct regional identity within ${country.subregion || country.cont}, sharing land borders with: ${country.borders}.`;
+            const cultureText = custom ? custom.culture : `Primary spoken languages include ${country.lang}. The nation operates in the ${country.timezone} timezone with ${country.capital} serving as its administrative capital.`;
+            const funText = custom ? custom.fun : `${country.name} uses ${country.curr} as its official currency and supports a population of ${country.pop} people.`;
+
+            document.getElementById('countryDetails').innerHTML = `
+                <div class="country-title">${country.flag} ${country.name}</div>
+                <div style="color:#94a3b8; font-size:12.5px; margin-bottom:10px;">
+                    Official: <strong>${country.officialName || country.name}</strong> • Region: <strong>${country.subregion || country.cont}</strong>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="label">Capital City</div><div class="val">${country.capital}</div></div>
+                    <div class="stat-card"><div class="label">Population</div><div class="val">${country.pop}</div></div>
+                    <div class="stat-card"><div class="label">Total Area</div><div class="val">${country.area}</div></div>
+                    <div class="stat-card"><div class="label">Currency</div><div class="val">${country.curr}</div></div>
+                    <div class="stat-card"><div class="label">Languages</div><div class="val">${country.lang}</div></div>
+                    <div class="stat-card"><div class="label">Timezone</div><div class="val">${country.timezone}</div></div>
+                </div>
+
+                <div class="fact-section">
+                    <h4><i class="fa-solid fa-mountain-sun" style="margin-right:6px;"></i> Geography & Location</h4>
+                    <p>${geoText}</p>
+                </div>
+                <div class="fact-section">
+                    <h4><i class="fa-solid fa-landmark" style="margin-right:6px;"></i> Heritage & Borders</h4>
+                    <p>${historyText}</p>
+                </div>
+                <div class="fact-section">
+                    <h4><i class="fa-solid fa-users" style="margin-right:6px;"></i> Society & Culture</h4>
+                    <p>${cultureText}</p>
+                </div>
+                <div class="fact-section" style="border-left-color: #f59e0b;">
+                    <h4 style="color: #fbbf24;"><i class="fa-solid fa-lightbulb" style="margin-right:6px;"></i> Key Highlight</h4>
+                    <p>${funText}</p>
+                </div>
+            `;
+
+            focusCoordinates(country.lat, country.lng);
+        }
+    </script>
+</body>
+</html>
