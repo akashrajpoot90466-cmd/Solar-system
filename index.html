@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,10 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
- 
     
     <style>
-     body, .chip, #hoverTooltip {
+        body, .chip, #hoverTooltip {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji";
 }
         * {
@@ -511,7 +510,7 @@
             }
         }
 
-        /* Orbit Pause/Resume (Syncs with Music Pause/Play) */
+     /* Orbit Pause/Resume (Syncs with Music Pause/Play) */
         function toggleOrbit() {
             const stage = document.getElementById('solarStage');
             const icon = document.getElementById('pauseIcon');
@@ -522,7 +521,6 @@
                 stage.classList.add('paused');
                 icon.className = 'fa-solid fa-play';
                 text.innerText = 'Resume';
-                
             } else {
                 stage.classList.remove('paused');
                 icon.className = 'fa-solid fa-pause';
@@ -530,7 +528,6 @@
                 tryPlayMusic();
             }
         }
-
         /* Planets Data & 3D Preview */
         const planetData = {
             Sun: { name: "Sun (सूर्य)", color: 0xffaa00, mass: "1.989 × 10^30 kg", diam: "1,392,700 km", moons: "8 Planets", orbit: "230M Yrs", desc: "The Sun is a G-type main-sequence star at the center of our Solar System. It accounts for 99.86% of the total mass of the entire Solar System." },
@@ -622,7 +619,7 @@
             }
         };
 
-        /* Expanded Built-in World Atlas */
+        /* Expanded Built-in World Atlas (100+ Countries) */
         const fallbackCountries = [
             { id: "IND", name: "India", officialName: "Republic of India", flag: "🇮🇳", cont: "Asia", subregion: "Southern Asia", lat: 20.59, lng: 78.96, capital: "New Delhi", pop: "1,441,719,852", area: "3,287,590 km²", curr: "Indian Rupee (₹)", lang: "Hindi, English", borders: "PAK, CHN, NPL, BTN, MMR, BGD", timezone: "UTC+05:30" },
             { id: "CHN", name: "China", officialName: "People's Republic of China", flag: "🇨🇳", cont: "Asia", subregion: "Eastern Asia", lat: 35.86, lng: 104.19, capital: "Beijing", pop: "1,411,750,000", area: "9,596,961 km²", curr: "Chinese Yuan (¥)", lang: "Mandarin", borders: "IND, RUS, MNG, KAZ, NPL, PAK", timezone: "UTC+08:00" },
@@ -633,10 +630,27 @@
             { id: "ARE", name: "United Arab Emirates", officialName: "United Arab Emirates", flag: "🇦🇪", cont: "Asia", subregion: "Western Asia", lat: 23.42, lng: 53.84, capital: "Abu Dhabi", pop: "9,516,871", area: "83,600 km²", curr: "UAE Dirham (د.إ)", lang: "Arabic", borders: "OMN, SAU", timezone: "UTC+04:00" },
             { id: "THA", name: "Thailand", officialName: "Kingdom of Thailand", flag: "🇹🇭", cont: "Asia", subregion: "South-Eastern Asia", lat: 15.87, lng: 100.99, capital: "Bangkok", pop: "71,801,279", area: "513,120 km²", curr: "Thai Baht (฿)", lang: "Thai", borders: "MMR, LAO, KHM, MYS", timezone: "UTC+07:00" },
             { id: "VNM", name: "Vietnam", officialName: "Socialist Republic of Vietnam", flag: "🇻🇳", cont: "Asia", subregion: "South-Eastern Asia", lat: 14.05, lng: 108.27, capital: "Hanoi", pop: "98,858,950", area: "331,212 km²", curr: "Vietnamese Dong (₫)", lang: "Vietnamese", borders: "CHN, LAO, KHM", timezone: "UTC+07:00" },
-            { id: "PAK", name: "Pakistan", officialName: "Islamic Republic of Pakistan", flag: "🇵🇰", cont: "Asia", subregion: "Southern Asia", lat: 30.37, lng: 69.34, capital: "Islamabad", pop: "241,499,431", area: "881,912 km²", curr: "Pakistani Rupee (₨)", lang: "Urdu, English", borders: "IND, AFG, IRN, CHN", timezone: "UTC+05:00" },
+            { id: "PAK", name: "Pakistan", officialName: "Islamic Republic of Pakistan", flag: "🇵🇰", cont: "Asia", subregion: "Southern Asia", lat: 30.37, lng: 69.34, capital: "Islamabad", pop: "241,499,431", area: "881,912 km²", curr: "Pakistani Rupee (₨)", lang: "Urdu, English", borders: "IND, AFG, IRN, CHN", timezone: "UTC+05:30" },
             { id: "BGD", name: "Bangladesh", officialName: "People's Republic of Bangladesh", flag: "🇧🇩", cont: "Asia", subregion: "Southern Asia", lat: 23.68, lng: 90.35, capital: "Dhaka", pop: "172,954,319", area: "147,570 km²", curr: "Bangladeshi Taka (৳)", lang: "Bengali", borders: "IND, MMR", timezone: "UTC+06:00" },
             { id: "NPL", name: "Nepal", officialName: "Federal Democratic Republic of Nepal", flag: "🇳🇵", cont: "Asia", subregion: "Southern Asia", lat: 28.39, lng: 84.12, capital: "Kathmandu", pop: "30,896,590", area: "147,181 km²", curr: "Nepalese Rupee (₨)", lang: "Nepali", borders: "IND, CHN", timezone: "UTC+05:45" },
             { id: "TUR", name: "Turkey", officialName: "Republic of Türkiye", flag: "🇹🇷", cont: "Asia", subregion: "Western Asia", lat: 38.96, lng: 35.24, capital: "Ankara", pop: "85,326,000", area: "783,562 km²", curr: "Turkish Lira (₺)", lang: "Turkish", borders: "GRC, BGR, GEO, ARM, IRN, IRQ, SYR", timezone: "UTC+03:00" },
+            { id: "PHL", name: "Philippines", officialName: "Republic of the Philippines", flag: "🇵🇭", cont: "Asia", subregion: "South-Eastern Asia", lat: 12.88, lng: 121.77, capital: "Manila", pop: "115,559,009", area: "342,353 km²", curr: "Philippine Peso (₱)", lang: "Filipino, English", borders: "Island Nation", timezone: "UTC+08:00" },
+            { id: "MYS", name: "Malaysia", officialName: "Malaysia", flag: "🇲🇾", cont: "Asia", subregion: "South-Eastern Asia", lat: 4.21, lng: 101.97, capital: "Kuala Lumpur", pop: "34,308,525", area: "330,803 km²", curr: "Malaysian Ringgit (RM)", lang: "Malay", borders: "THA, IDN, BRN", timezone: "UTC+08:00" },
+            { id: "SGP", name: "Singapore", officialName: "Republic of Singapore", flag: "🇸🇬", cont: "Asia", subregion: "South-Eastern Asia", lat: 1.35, lng: 103.81, capital: "Singapore", pop: "6,014,723", area: "716 km²", curr: "Singapore Dollar ($)", lang: "English, Malay, Mandarin, Tamil", borders: "MYS", timezone: "UTC+08:00" },
+            { id: "IRN", name: "Iran", officialName: "Islamic Republic of Iran", flag: "🇮🇷", cont: "Asia", subregion: "Southern Asia", lat: 32.42, lng: 53.68, capital: "Tehran", pop: "89,172,767", area: "1,648,195 km²", curr: "Iranian Rial (﷼)", lang: "Persian", borders: "IRQ, TUR, ARM, AZE, TKM, AFG, PAK", timezone: "UTC+03:30" },
+            { id: "IRQ", name: "Iraq", officialName: "Republic of Iraq", flag: "🇮🇶", cont: "Asia", subregion: "Western Asia", lat: 33.22, lng: 43.67, capital: "Baghdad", pop: "45,504,566", area: "438,317 km²", curr: "Iraqi Dinar (ع.د)", lang: "Arabic, Kurdish", borders: "TUR, IRN, KWT, SAU, JOR, SYR", timezone: "UTC+03:00" },
+            { id: "ISR", name: "Israel", officialName: "State of Israel", flag: "🇮🇱", cont: "Asia", subregion: "Western Asia", lat: 31.04, lng: 34.85, capital: "Jerusalem", pop: "9,787,000", area: "20,770 km²", curr: "Israeli New Shekel (₪)", lang: "Hebrew, Arabic", borders: "LBN, SYR, JOR, EGY", timezone: "UTC+02:00" },
+            { id: "KAZ", name: "Kazakhstan", officialName: "Republic of Kazakhstan", flag: "🇰🇿", cont: "Asia", subregion: "Central Asia", lat: 48.01, lng: 66.92, capital: "Astana", pop: "20,033,521", area: "2,724,900 km²", curr: "Kazakhstani Tenge (₸)", lang: "Kazakh, Russian", borders: "RUS, CHN, KGZ, UZB, TKM", timezone: "UTC+05:00" },
+            { id: "UZB", name: "Uzbekistan", officialName: "Republic of Uzbekistan", flag: "🇺🇿", cont: "Asia", subregion: "Central Asia", lat: 41.37, lng: 64.58, capital: "Tashkent", pop: "36,599,764", area: "447,400 km²", curr: "Uzbekistani Som (so'm)", lang: "Uzbek", borders: "KAZ, KGZ, TJK, AFG, TKM", timezone: "UTC+05:00" },
+            { id: "QAT", name: "Qatar", officialName: "State of Qatar", flag: "🇶🇦", cont: "Asia", subregion: "Western Asia", lat: 25.35, lng: 51.18, capital: "Doha", pop: "2,716,391", area: "11,586 km²", curr: "Qatari Riyal (ر.ق)", lang: "Arabic", borders: "SAU", timezone: "UTC+03:00" },
+            { id: "KWT", name: "Kuwait", officialName: "State of Kuwait", flag: "🇰🇼", cont: "Asia", subregion: "Western Asia", lat: 29.31, lng: 47.48, capital: "Kuwait City", pop: "4,310,108", area: "17,818 km²", curr: "Kuwaiti Dinar (د.ك)", lang: "Arabic", borders: "IRQ, SAU", timezone: "UTC+03:00" },
+            { id: "OMN", name: "Oman", officialName: "Sultanate of Oman", flag: "🇴🇲", cont: "Asia", subregion: "Western Asia", lat: 21.51, lng: 55.92, capital: "Muscat", pop: "4,644,384", area: "309,500 km²", curr: "Omani Rial (ر.ع.)", lang: "Arabic", borders: "SAU, ARE, YEM", timezone: "UTC+04:00" },
+            { id: "BHR", name: "Bahrain", officialName: "Kingdom of Bahrain", flag: "🇧🇭", cont: "Asia", subregion: "Western Asia", lat: 26.06, lng: 50.55, capital: "Manama", pop: "1,485,510", area: "765 km²", curr: "Bahraini Dinar (.د.ب)", lang: "Arabic", borders: "Island Nation", timezone: "UTC+03:00" },
+            { id: "LKA", name: "Sri Lanka", officialName: "Democratic Socialist Republic of Sri Lanka", flag: "🇱🇰", cont: "Asia", subregion: "Southern Asia", lat: 7.87, lng: 80.77, capital: "Sri Jayawardenepura Kotte", pop: "21,893,579", area: "65,610 km²", curr: "Sri Lankan Rupee (Rs)", lang: "Sinhala, Tamil", borders: "Island Nation", timezone: "UTC+05:30" },
+            { id: "MMR", name: "Myanmar", officialName: "Republic of the Union of Myanmar", flag: "🇲🇲", cont: "Asia", subregion: "South-Eastern Asia", lat: 21.91, lng: 95.95, capital: "Naypyidaw", pop: "54,577,997", area: "676,578 km²", curr: "Burmese Kyat (K)", lang: "Burmese", borders: "BGD, IND, CHN, LAO, THA", timezone: "UTC+06:30" },
+            { id: "KHM", name: "Cambodia", officialName: "Kingdom of Cambodia", flag: "🇰🇭", cont: "Asia", subregion: "South-Eastern Asia", lat: 12.56, lng: 104.99, capital: "Phnom Penh", pop: "16,944,826", area: "181,035 km²", curr: "Cambodian Riel (៛)", lang: "Khmer", borders: "THA, LAO, VNM", timezone: "UTC+07:00" },
+            
+            // Europe
             { id: "DEU", name: "Germany", officialName: "Federal Republic of Germany", flag: "🇩🇪", cont: "Europe", subregion: "Western Europe", lat: 51.16, lng: 10.45, capital: "Berlin", pop: "84,482,267", area: "357,114 km²", curr: "Euro (€)", lang: "German", borders: "FRA, POL, AUT, CHE, NLD, BEL", timezone: "UTC+01:00" },
             { id: "GBR", name: "United Kingdom", officialName: "United Kingdom of Great Britain", flag: "🇬🇧", cont: "Europe", subregion: "Northern Europe", lat: 55.37, lng: -3.43, capital: "London", pop: "68,350,000", area: "242,495 km²", curr: "British Pound (£)", lang: "English", borders: "IRL", timezone: "UTC+00:00" },
             { id: "FRA", name: "France", officialName: "French Republic", flag: "🇫🇷", cont: "Europe", subregion: "Western Europe", lat: 46.22, lng: 2.21, capital: "Paris", pop: "68,170,228", area: "551,695 km²", curr: "Euro (€)", lang: "French", borders: "DEU, ESP, ITA, CHE, BEL", timezone: "UTC+01:00" },
@@ -649,6 +663,22 @@
             { id: "NOR", name: "Norway", officialName: "Kingdom of Norway", flag: "🇳🇴", cont: "Europe", subregion: "Northern Europe", lat: 60.47, lng: 8.46, capital: "Oslo", pop: "5,519,594", area: "323,802 km²", curr: "Norwegian Krone (kr)", lang: "Norwegian", borders: "SWE, FIN, RUS", timezone: "UTC+01:00" },
             { id: "POL", name: "Poland", officialName: "Republic of Poland", flag: "🇵🇱", cont: "Europe", subregion: "Central Europe", lat: 51.91, lng: 19.14, capital: "Warsaw", pop: "36,685,849", area: "312,679 km²", curr: "Polish Złoty (zł)", lang: "Polish", borders: "DEU, CZE, SVK, UKR, BLR", timezone: "UTC+01:00" },
             { id: "GRC", name: "Greece", officialName: "Hellenic Republic", flag: "🇬🇷", cont: "Europe", subregion: "Southern Europe", lat: 39.07, lng: 21.82, capital: "Athens", pop: "10,361,295", area: "131,990 km²", curr: "Euro (€)", lang: "Greek", borders: "ALB, MKD, BGR, TUR", timezone: "UTC+02:00" },
+            { id: "AUT", name: "Austria", officialName: "Republic of Austria", flag: "🇦🇹", cont: "Europe", subregion: "Central Europe", lat: 47.51, lng: 14.55, capital: "Vienna", pop: "9,129,999", area: "83,871 km²", curr: "Euro (€)", lang: "German", borders: "CZE, DEU, HUN, ITA, LIE, SVK, SVN, CHE", timezone: "UTC+01:00" },
+            { id: "BEL", name: "Belgium", officialName: "Kingdom of Belgium", flag: "🇧🇪", cont: "Europe", subregion: "Western Europe", lat: 50.50, lng: 4.46, capital: "Brussels", pop: "11,686,140", area: "30,528 km²", curr: "Euro (€)", lang: "Dutch, French, German", borders: "FRA, DEU, LUX, NLD", timezone: "UTC+01:00" },
+            { id: "DNK", name: "Denmark", officialName: "Kingdom of Denmark", flag: "🇩🇰", cont: "Europe", subregion: "Northern Europe", lat: 56.26, lng: 9.50, capital: "Copenhagen", pop: "5,932,654", area: "43,094 km²", curr: "Danish Krone (kr)", lang: "Danish", borders: "DEU", timezone: "UTC+01:00" },
+            { id: "FIN", name: "Finland", officialName: "Republic of Finland", flag: "🇫🇮", cont: "Europe", subregion: "Northern Europe", lat: 61.92, lng: 25.74, capital: "Helsinki", pop: "5,584,549", area: "338,442 km²", curr: "Euro (€)", lang: "Finnish, Swedish", borders: "NOR, SWE, RUS", timezone: "UTC+02:00" },
+            { id: "IRL", name: "Ireland", officialName: "Republic of Ireland", flag: "🇮🇪", cont: "Europe", subregion: "Northern Europe", lat: 53.41, lng: -8.24, capital: "Dublin", pop: "5,255,017", area: "70,273 km²", curr: "Euro (€)", lang: "Irish, English", borders: "GBR", timezone: "UTC+00:00" },
+            { id: "PRT", name: "Portugal", officialName: "Portuguese Republic", flag: "🇵🇹", cont: "Europe", subregion: "Southern Europe", lat: 39.39, lng: -8.22, capital: "Lisbon", pop: "10,467,366", area: "92,090 km²", curr: "Euro (€)", lang: "Portuguese", borders: "ESP", timezone: "UTC+00:00" },
+            { id: "ROU", name: "Romania", officialName: "Romania", flag: "🇷🇴", cont: "Europe", subregion: "Eastern Europe", lat: 45.94, lng: 24.96, capital: "Bucharest", pop: "19,051,562", area: "238,397 km²", curr: "Romanian Leu (lei)", lang: "Romanian", borders: "BGR, HUN, MDA, SRB, UKR", timezone: "UTC+02:00" },
+            { id: "UKR", name: "Ukraine", officialName: "Ukraine", flag: "🇺🇦", cont: "Europe", subregion: "Eastern Europe", lat: 48.37, lng: 31.16, capital: "Kyiv", pop: "36,744,634", area: "603,500 km²", curr: "Ukrainian Hryvnia (₴)", lang: "Ukrainian", borders: "BLR, HUN, MDA, POL, ROU, RUS, SVK", timezone: "UTC+02:00" },
+            { id: "CZE", name: "Czech Republic", officialName: "Czech Republic", flag: "🇨🇿", cont: "Europe", subregion: "Central Europe", lat: 49.81, lng: 15.47, capital: "Prague", pop: "10,846,671", area: "78,867 km²", curr: "Czech Koruna (Kč)", lang: "Czech", borders: "AUT, DEU, POL, SVK", timezone: "UTC+01:00" },
+            { id: "HUN", name: "Hungary", officialName: "Hungary", flag: "🇭🇺", cont: "Europe", subregion: "Central Europe", lat: 47.16, lng: 19.50, capital: "Budapest", pop: "9,597,085", area: "93,028 km²", curr: "Hungarian Forint (Ft)", lang: "Hungarian", borders: "AUT, HRV, ROU, SRB, SVK, SVN, UKR", timezone: "UTC+01:00" },
+            { id: "SVK", name: "Slovakia", officialName: "Slovak Republic", flag: "🇸🇰", cont: "Europe", subregion: "Central Europe", lat: 48.66, lng: 19.69, capital: "Bratislava", pop: "5,428,792", area: "49,035 km²", curr: "Euro (€)", lang: "Slovak", borders: "AUT, CZE, POL, ROU, UKR", timezone: "UTC+01:00" },
+            { id: "BGR", name: "Bulgaria", officialName: "Republic of Bulgaria", flag: "🇧🇬", cont: "Europe", subregion: "Southeastern Europe", lat: 42.73, lng: 25.48, capital: "Sofia", pop: "6,447,710", area: "110,879 km²", curr: "Bulgarian Lev (лв)", lang: "Bulgarian", borders: "GRC, MKD, ROU, SRB, TUR", timezone: "UTC+02:00" },
+            { id: "HRV", name: "Croatia", officialName: "Republic of Croatia", flag: "🇭🇷", cont: "Europe", subregion: "Southern Europe", lat: 45.10, lng: 15.20, capital: "Zagreb", pop: "4,008,617", area: "56,594 km²", curr: "Euro (€)", lang: "Croatian", borders: "BIH, HUN, MNE, SRB, SVN", timezone: "UTC+01:00" },
+            { id: "SRB", name: "Serbia", officialName: "Republic of Serbia", flag: "🇷🇸", cont: "Europe", subregion: "Southeastern Europe", lat: 44.01, lng: 21.00, capital: "Belgrade", pop: "6,664,449", area: "88,361 km²", curr: "Serbian Dinar (дин.)", lang: "Serbian", borders: "BIH, BGR, HRV, HUN, KOS, MKD, MNE, ROU", timezone: "UTC+01:00" },
+
+            // Americas
             { id: "USA", name: "United States", officialName: "United States of America", flag: "🇺🇸", cont: "Americas", subregion: "North America", lat: 37.09, lng: -95.71, capital: "Washington, D.C.", pop: "334,914,895", area: "9,833,517 km²", curr: "US Dollar ($)", lang: "English", borders: "CAN, MEX", timezone: "UTC-05:00" },
             { id: "CAN", name: "Canada", officialName: "Canada", flag: "🇨🇦", cont: "Americas", subregion: "North America", lat: 56.13, lng: -106.34, capital: "Ottawa", pop: "40,097,761", area: "9,984,670 km²", curr: "Canadian Dollar ($)", lang: "English, French", borders: "USA", timezone: "UTC-05:00" },
             { id: "MEX", name: "Mexico", officialName: "United Mexican States", flag: "🇲🇽", cont: "Americas", subregion: "North America", lat: 23.63, lng: -102.55, capital: "Mexico City", pop: "128,455,567", area: "1,964,375 km²", curr: "Mexican Peso ($)", lang: "Spanish", borders: "USA, GTM, BLZ", timezone: "UTC-06:00" },
@@ -657,15 +687,39 @@
             { id: "COL", name: "Colombia", officialName: "Republic of Colombia", flag: "🇨🇴", cont: "Americas", subregion: "South America", lat: 4.57, lng: -74.29, capital: "Bogotá", pop: "52,085,168", area: "1,141,748 km²", curr: "Colombian Peso ($)", lang: "Spanish", borders: "PAN, VEN, BRA, PER, ECU", timezone: "UTC-05:00" },
             { id: "PER", name: "Peru", officialName: "Republic of Peru", flag: "🇵🇪", cont: "Americas", subregion: "South America", lat: -9.18, lng: -75.01, capital: "Lima", pop: "34,352,719", area: "1,285,216 km²", curr: "Peruvian Sol (S/.)", lang: "Spanish, Quechua", borders: "ECU, COL, BRA, BOL, CHL", timezone: "UTC-05:00" },
             { id: "CHL", name: "Chile", officialName: "Republic of Chile", flag: "🇨🇱", cont: "Americas", subregion: "South America", lat: -35.67, lng: -71.54, capital: "Santiago", pop: "19,629,590", area: "756,102 km²", curr: "Chilean Peso ($)", lang: "Spanish", borders: "PER, BOL, ARG", timezone: "UTC-04:00" },
+            { id: "CUB", name: "Cuba", officialName: "Republic of Cuba", flag: "🇨🇺", cont: "Americas", subregion: "Caribbean", lat: 21.52, lng: -77.78, capital: "Havana", pop: "11,194,449", area: "109,884 km²", curr: "Cuban Peso ($)", lang: "Spanish", borders: "Island Nation", timezone: "UTC-05:00" },
+            { id: "DOM", name: "Dominican Republic", officialName: "Dominican Republic", flag: "🇩🇴", cont: "Americas", subregion: "Caribbean", lat: 18.73, lng: -70.16, capital: "Santo Domingo", pop: "11,332,972", area: "48,671 km²", curr: "Dominican Peso ($)", lang: "Spanish", borders: "HTI", timezone: "UTC-04:00" },
+            { id: "ECU", name: "Ecuador", officialName: "Republic of Ecuador", flag: "🇪🇨", cont: "Americas", subregion: "South America", lat: -1.83, lng: -78.18, capital: "Quito", pop: "18,190,484", area: "276,841 km²", curr: "US Dollar ($)", lang: "Spanish", borders: "COL, PER", timezone: "UTC-05:00" },
+            { id: "BOL", name: "Bolivia", officialName: "Plurinational State of Bolivia", flag: "🇧🇴", cont: "Americas", subregion: "South America", lat: -16.29, lng: -63.58, capital: "Sucre", pop: "12,388,571", area: "1,098,581 km²", curr: "Bolivian Boliviano (Bs.)", lang: "Spanish, Quechua, Aymara", borders: "ARG, BRA, CHL, PRY, PER", timezone: "UTC-04:00" },
+            { id: "VEN", name: "Venezuela", officialName: "Bolivarian Republic of Venezuela", flag: "🇻🇪", cont: "Americas", subregion: "South America", lat: 6.42, lng: -66.58, capital: "Caracas", pop: "28,838,499", area: "916,445 km²", curr: "Venezuelan bolívar (Bs.)", lang: "Spanish", borders: "BRA, COL, GUY", timezone: "UTC-04:00" },
+            { id: "GTM", name: "Guatemala", officialName: "Republic of Guatemala", flag: "🇬🇹", cont: "Americas", subregion: "Central America", lat: 15.78, lng: -90.23, capital: "Guatemala City", pop: "18,092,026", area: "108,889 km²", curr: "Guatemalan Quetzal (Q)", lang: "Spanish", borders: "BLZ, SLV, HND, MEX", timezone: "UTC-06:00" },
+            { id: "HND", name: "Honduras", officialName: "Republic of Honduras", flag: "🇭🇳", cont: "Americas", subregion: "Central America", lat: 15.20, lng: -86.24, capital: "Tegucigalpa", pop: "10,593,798", area: "112,492 km²", curr: "Honduran Lempira (L)", lang: "Spanish", borders: "GTM, SLV, NIC", timezone: "UTC-06:00" },
+            { id: "CRI", name: "Costa Rica", officialName: "Republic of Costa Rica", flag: "🇨🇷", cont: "Americas", subregion: "Central America", lat: 9.74, lng: -83.75, capital: "San José", pop: "5,044,197", area: "51,100 km²", curr: "Costa Rican Colón (₡)", lang: "Spanish", borders: "NIC, PAN", timezone: "UTC-06:00" },
+            { id: "PAN", name: "Panama", officialName: "Republic of Panama", flag: "🇵🇦", cont: "Americas", subregion: "Central America", lat: 8.53, lng: -80.78, capital: "Panama City", pop: "4,468,087", area: "75,417 km²", curr: "Panamanian Balboa (B/.)", lang: "Spanish", borders: "COL, CRI", timezone: "UTC-05:00" },
+            { id: "URY", name: "Uruguay", officialName: "Oriental Republic of Uruguay", flag: "🇺🇾", cont: "Americas", subregion: "South America", lat: -32.52, lng: -55.76, capital: "Montevideo", pop: "3,423,108", area: "176,215 km²", curr: "Uruguayan Peso ($)", lang: "Spanish", borders: "ARG, BRA", timezone: "UTC-03:00" },
+            { id: "PRY", name: "Paraguay", officialName: "Republic of Paraguay", flag: "🇵🇾", cont: "Americas", subregion: "South America", lat: -23.44, lng: -58.44, capital: "Asunción", pop: "6,861,524", area: "406,752 km²", curr: "Paraguayan Guaraní (₲)", lang: "Spanish, Guaraní", borders: "ARG, BOL, BRA", timezone: "UTC-04:00" },
+
+            // Africa
             { id: "EGY", name: "Egypt", officialName: "Arab Republic of Egypt", flag: "🇪🇬", cont: "Africa", subregion: "Northern Africa", lat: 26.82, lng: 30.80, capital: "Cairo", pop: "112,716,598", area: "1,002,450 km²", curr: "Egyptian Pound (E£)", lang: "Arabic", borders: "LBY, SDN, ISR", timezone: "UTC+02:00" },
             { id: "ZAF", name: "South Africa", officialName: "Republic of South Africa", flag: "🇿🇦", cont: "Africa", subregion: "Southern Africa", lat: -30.55, lng: 22.93, capital: "Pretoria", pop: "60,414,495", area: "1,221,037 km²", curr: "South African Rand (R)", lang: "Zulu, Xhosa, English", borders: "NAM, BWA, ZWE, MOZ", timezone: "UTC+02:00" },
             { id: "NGA", name: "Nigeria", officialName: "Federal Republic of Nigeria", flag: "🇳🇬", cont: "Africa", subregion: "Western Africa", lat: 9.08, lng: 8.67, capital: "Abuja", pop: "223,804,632", area: "923,768 km²", curr: "Nigerian Naira (₦)", lang: "English", borders: "BEN, NER, TCD, CMR", timezone: "UTC+01:00" },
             { id: "KEN", name: "Kenya", officialName: "Republic of Kenya", flag: "🇰🇪", cont: "Africa", subregion: "Eastern Africa", lat: -0.02, lng: 37.90, capital: "Nairobi", pop: "55,100,586", area: "580,367 km²", curr: "Kenyan Shilling (KSh)", lang: "Swahili, English", borders: "ETH, SOM, TZA, UGA, SSD", timezone: "UTC+03:00" },
             { id: "MAR", name: "Morocco", officialName: "Kingdom of Morocco", flag: "🇲🇦", cont: "Africa", subregion: "Northern Africa", lat: 31.79, lng: -7.09, capital: "Rabat", pop: "37,840,044", area: "446,550 km²", curr: "Moroccan Dirham (DH)", lang: "Arabic, Berber", borders: "DZA, ESP", timezone: "UTC+01:00" },
             { id: "ETH", name: "Ethiopia", officialName: "Federal Democratic Republic of Ethiopia", flag: "🇪🇹", cont: "Africa", subregion: "Eastern Africa", lat: 9.14, lng: 40.48, capital: "Addis Ababa", pop: "126,527,060", area: "1,104,300 km²", curr: "Ethiopian Birr (Br)", lang: "Amharic", borders: "ERI, DJI, SOM, KEN, SSD, SDN", timezone: "UTC+03:00" },
+            { id: "DZA", name: "Algeria", officialName: "People's Democratic Republic of Algeria", flag: "🇩🇿", cont: "Africa", subregion: "Northern Africa", lat: 28.03, lng: 1.65, capital: "Algiers", pop: "45,606,480", area: "2,381,741 km²", curr: "Algerian Dinar (دج)", lang: "Arabic, Berber", borders: "TUN, LBY, NER, ESH, MRT, MLI, MAR", timezone: "UTC+01:00" },
+            { id: "TUN", name: "Tunisia", officialName: "Tunisian Republic", flag: "🇹🇳", cont: "Africa", subregion: "Northern Africa", lat: 33.88, lng: 9.53, capital: "Tunis", pop: "12,458,223", area: "163,610 km²", curr: "Tunisian Dinar (د.ت)", lang: "Arabic", borders: "DZA, LBY", timezone: "UTC+01:00" },
+            { id: "GHA", name: "Ghana", officialName: "Republic of Ghana", flag: "🇬🇭", cont: "Africa", subregion: "Western Africa", lat: 7.94, lng: -1.02, capital: "Accra", pop: "34,121,985", area: "238,533 km²", curr: "Ghanaian Cedi (₵)", lang: "English", borders: "BFA, CIV, TGO", timezone: "UTC+00:00" },
+            { id: "TZA", name: "Tanzania", officialName: "United Republic of Tanzania", flag: "🇹🇿", cont: "Africa", subregion: "Eastern Africa", lat: -6.36, lng: 34.88, capital: "Dodoma", pop: "67,438,106", area: "945,087 km²", curr: "Tanzanian Shilling (Sh)", lang: "Swahili, English", borders: "BDI, COD, KEN, MWI, MOZ, RWA, UGA, ZMB", timezone: "UTC+03:00" },
+            { id: "UGA", name: "Uganda", officialName: "Republic of Uganda", flag: "🇺🇬", cont: "Africa", subregion: "Eastern Africa", lat: 1.37, lng: 32.29, capital: "Kampala", pop: "48,582,334", area: "241,038 km²", curr: "Ugandan Shilling (Sh)", lang: "English, Swahili", borders: "COD, KEN, RWA, SSD, TZA", timezone: "UTC+03:00" },
+            { id: "SDN", name: "Sudan", officialName: "Republic of the Sudan", flag: "🇸🇩", cont: "Africa", subregion: "Northern Africa", lat: 12.86, lng: 30.21, capital: "Khartoum", pop: "48,109,006", area: "1,886,068 km²", curr: "Sudanese Pound (ج.س.)", lang: "Arabic, English", borders: "CAF, TCD, EGY, ERI, ETH, LBY, SSD", timezone: "UTC+02:00" },
+            { id: "AGO", name: "Angola", officialName: "Republic of Angola", flag: "🇦🇴", cont: "Africa", subregion: "Middle Africa", lat: -11.20, lng: 17.87, capital: "Luanda", pop: "36,684,202", area: "1,246,700 km²", curr: "Angolan Kwanza (Kz)", lang: "Portuguese", borders: "COG, COD, ZMB, NAM", timezone: "UTC+01:00" },
+            { id: "MOZ", name: "Mozambique", officialName: "Republic of Mozambique", flag: "🇲🇿", cont: "Africa", subregion: "Eastern Africa", lat: -18.66, lng: 35.52, capital: "Maputo", pop: "33,897,354", area: "801,590 km²", curr: "Mozambican Metical (MT)", lang: "Portuguese", borders: "MWI, ZAF, SWZ, TZA, ZMB, ZWE", timezone: "UTC+02:00" },
+
+            // Oceania
             { id: "AUS", name: "Australia", officialName: "Commonwealth of Australia", flag: "🇦🇺", cont: "Oceania", subregion: "Australia and New Zealand", lat: -25.27, lng: 133.77, capital: "Canberra", pop: "26,638,544", area: "7,692,024 km²", curr: "Australian Dollar ($)", lang: "English", borders: "Island Continent", timezone: "UTC+10:00" },
             { id: "NZL", name: "New Zealand", officialName: "New Zealand", flag: "🇳🇿", cont: "Oceania", subregion: "Australia and New Zealand", lat: -40.90, lng: 174.88, capital: "Wellington", pop: "5,223,100", area: "268,021 km²", curr: "New Zealand Dollar ($)", lang: "English, Māori", borders: "Island Nation", timezone: "UTC+12:00" },
-            { id: "FJI", name: "Fiji", officialName: "Republic of Fiji", flag: "🇫🇯", cont: "Oceania", subregion: "Melanesia", lat: -17.71, lng: 178.06, capital: "Suva", pop: "936,375", area: "18,272 km²", curr: "Fijian Dollar ($)", lang: "English, Fijian, Hindi", borders: "Island Nation", timezone: "UTC+12:00" }
+            { id: "FJI", name: "Fiji", officialName: "Republic of Fiji", flag: "🇫🇯", cont: "Oceania", subregion: "Melanesia", lat: -17.71, lng: 178.06, capital: "Suva", pop: "936,375", area: "18,272 km²", curr: "Fijian Dollar ($)", lang: "English, Fijian, Hindi", borders: "Island Nation", timezone: "UTC+12:00" },
+            { id: "PNG", name: "Papua New Guinea", officialName: "Independent State of Papua New Guinea", flag: "🇵🇬", cont: "Oceania", subregion: "Melanesia", lat: -6.31, lng: 143.95, capital: "Port Moresby", pop: "10,329,931", area: "462,840 km²", curr: "Papua New Guinean Kina (K)", lang: "English", borders: "IDN", timezone: "UTC+10:00" }
         ].sort((a, b) => a.name.localeCompare(b.name));
 
         let allCountriesList = [...fallbackCountries];
@@ -673,7 +727,6 @@
 
         async function loadAllWorldCountries() {
             try {
-                // Fast & reliable CDN URL jo bina CORS error ke 250+ countries deta hai
                 const res = await fetch('https://raw.githubusercontent.com/mledoze/countries/master/countries.json');
                 if (!res.ok) throw new Error("Network error");
                 const data = await res.json();
@@ -714,6 +767,7 @@
                 document.getElementById('totalCountBadge').innerText = `${allCountriesList.length} Major Countries Loaded`;
             }
         }
+
         loadAllWorldCountries();
 
         /* 3D Earth Globe Engine */
@@ -845,7 +899,7 @@
 
                 if (intersects.length > 0) {
                     const country = intersects[0].object.userData.country;
-                    tooltip.innerHTML = `${country.flag} ${country.name} <span style="color:#94a3b8; font-weight:400;">(${country.capital})</span>`;
+                    tooltip.innerHTML = ` <img src="https://flagcdn.com/24x18/${country.id.toLowerCase()}.png" style="width:18px; height:13px; vertical-align:middle; margin-right:6px;"> ${country.name} <span style="color:#94a3b8; font-weight:400;">(${country.capital})</span>`;
                     tooltip.style.left = event.clientX + 'px';
                     tooltip.style.top = event.clientY + 'px';
                     tooltip.style.display = 'block';
