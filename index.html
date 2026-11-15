@@ -852,28 +852,48 @@
             });
 
             const tooltip = document.getElementById('hoverTooltip');
-
             container.addEventListener('mousemove', (event) => {
+                handleInteraction(event.clientX, event.clientY, false);
+            });
+            container.addEventListener('click', (event) => {
+                handleInteraction(event.clientX, event.clientY, true);
+            });
+
+            container.addEventListener('touchend', (event) => {
+                if (event.changedTouches.length > 0) {
+                    const touch = event.changedTouches[0];
+                    handleInteraction(touch.clientX, touch.clientY, true);
+                }
+            });
+
+            function handleInteraction(clientX, clientY, isClick) {
                 const rect = renderer.domElement.getBoundingClientRect();
-                mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-                mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObjects(pinsArray);
 
                 if (intersects.length > 0) {
                     const country = intersects[0].object.userData.country;
+                    
                     tooltip.innerHTML = `<img src="${getFlagUrl(country)}" style="width:18px; height:13px; vertical-align:middle; margin-right:6px;" alt="flag"> ${country.name} <span style="color:#94a3b8; font-weight:400;">(${country.capital})</span>`;
-                    tooltip.style.left = event.clientX + 'px';
-                    tooltip.style.top = event.clientY + 'px';
+                    tooltip.style.left = clientX + 'px';
+                    tooltip.style.top = clientY + 'px';
                     tooltip.style.display = 'block';
                     container.style.cursor = 'pointer';
-                } else {
-                    tooltip.style.display = 'none';
-                    container.style.cursor = 'grab';
-                }
-            });
 
+ 
+                    if (isClick) {
+                        selectCountry(country.id);
+                    }
+                } else {
+                    if (!isClick) {
+                        tooltip.style.display = 'none';
+                        container.style.cursor = 'grab';
+                    }
+                }
+            }
             container.addEventListener('click', () => {
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObjects(pinsArray);
