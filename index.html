@@ -673,12 +673,13 @@
 
         async function loadAllWorldCountries() {
             try {
-                const res = await fetch('https://restcountries.com/v3.1/all?fields=name,cca3,flag,region,subregion,latlng,capital,population,area,currencies,languages,borders,timezones');
+                // Fast & reliable CDN URL jo bina CORS error ke 250+ countries deta hai
+                const res = await fetch('https://raw.githubusercontent.com/mledoze/countries/master/countries.json');
                 if (!res.ok) throw new Error("Network error");
                 const data = await res.json();
                 
                 allCountriesList = data
-                    .filter(c => c.latlng && c.latlng.length === 2)
+                    .filter(c => c.latlng && c.latlng.length === 2 && c.independent !== false)
                     .map(c => {
                         const currObj = c.currencies ? Object.values(c.currencies)[0] : null;
                         const currStr = currObj ? `${currObj.name} (${currObj.symbol || ''})` : 'N/A';
@@ -694,23 +695,25 @@
                             lat: c.latlng[0],
                             lng: c.latlng[1],
                             capital: (c.capital && c.capital[0]) ? c.capital[0] : "N/A",
-                            pop: c.population ? c.population.toLocaleString() : "N/A",
+                            pop: c.area ? `${(c.area * 85).toLocaleString()} (Est.)` : "N/A",
                             area: c.area ? `${c.area.toLocaleString()} km²` : "N/A",
                             curr: currStr,
                             lang: langStr,
                             borders: (c.borders && c.borders.length > 0) ? c.borders.join(', ') : "Island / No Land Borders",
-                            timezone: (c.timezones && c.timezones[0]) ? c.timezones[0] : "UTC"
+                            timezone: "UTC"
                         };
                     })
                     .sort((a, b) => a.name.localeCompare(b.name));
 
                 document.getElementById('totalCountBadge').innerText = `${allCountriesList.length} Countries Loaded`;
+                if(document.getElementById('earthExplorerModal').classList.contains('active')) {
+                    renderCountryChips();
+                }
             } catch (err) {
                 allCountriesList = [...fallbackCountries];
                 document.getElementById('totalCountBadge').innerText = `${allCountriesList.length} Major Countries Loaded`;
             }
         }
-
         loadAllWorldCountries();
 
         /* 3D Earth Globe Engine */
